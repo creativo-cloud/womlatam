@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Generador de firmas — WOM</title>
+<style>
+  :root{
+    --azul-oscuro:#2E5C99;
+    --azul-claro:#5B9BD5;
+    --gris-texto:#222222;
+    --gris-suave:#666666;
+    --fondo:#F5F7FA;
+    --panel:#ffffff;
+    --borde:#E1E6ED;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    background:var(--fondo);
+    color:var(--gris-texto);
+    padding:32px 20px;
+  }
+  h1{
+    font-size:22px;
+    margin:0 0 4px 0;
+    color:var(--azul-oscuro);
+  }
+  p.sub{
+    margin:0 0 28px 0;
+    color:var(--gris-suave);
+    font-size:14px;
+  }
+  .wrap{
+    max-width:1080px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns: 360px 1fr;
+    gap:24px;
+  }
+  @media (max-width:800px){
+    .wrap{grid-template-columns:1fr;}
+  }
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--borde);
+    border-radius:10px;
+    padding:20px;
+  }
+  .panel h2{
+    font-size:14px;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    color:var(--gris-suave);
+    margin:0 0 16px 0;
+  }
+  label{
+    display:block;
+    font-size:13px;
+    font-weight:600;
+    margin-bottom:6px;
+    color:var(--gris-texto);
+  }
+  input{
+    width:100%;
+    padding:9px 10px;
+    border:1px solid var(--borde);
+    border-radius:6px;
+    font-size:14px;
+    margin-bottom:16px;
+    font-family:inherit;
+  }
+  input:focus{
+    outline:none;
+    border-color:var(--azul-claro);
+    box-shadow:0 0 0 3px rgba(91,155,213,0.2);
+  }
+  .divider{
+    border:none;
+    border-top:1px solid var(--borde);
+    margin:4px 0 18px 0;
+  }
+  .preview-box{
+    background:#fff;
+    border:1px solid var(--borde);
+    border-radius:8px;
+    padding:24px;
+    min-height:120px;
+  }
+  #copyBtn{
+    margin-top:18px;
+    width:100%;
+    padding:12px;
+    background:var(--azul-oscuro);
+    color:#fff;
+    border:none;
+    border-radius:7px;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  #copyBtn:hover{ background:#264d80; }
+  #copyBtn.copied{ background:#2f9e5c; }
+  .hint{
+    font-size:12px;
+    color:var(--gris-suave);
+    margin-top:10px;
+    line-height:1.5;
+  }
+  .hint b{ color:var(--gris-texto); }
+
+  .tabs{
+    display:flex;
+    gap:8px;
+    margin-bottom:18px;
+  }
+  .tab-btn{
+    flex:1;
+    padding:9px 8px;
+    border:1px solid var(--borde);
+    background:#fff;
+    border-radius:7px;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--gris-suave);
+    cursor:pointer;
+  }
+  .tab-btn.active{
+    background:var(--azul-oscuro);
+    color:#fff;
+    border-color:var(--azul-oscuro);
+  }
+  .social-fields{
+    display:none;
+  }
+  .social-fields.show{
+    display:block;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="panel">
+    <h1 style="margin-top:0;">Generador de firmas</h1>
+    <p class="sub">Completá los datos y copiá la firma lista para pegar.</p>
+
+    <div class="tabs">
+      <button type="button" class="tab-btn active" data-template="clasica">Clásica</button>
+      <button type="button" class="tab-btn" data-template="tarjeta">Tarjeta oscura</button>
+    </div>
+
+    <h2>Configuración fija (una sola vez)</h2>
+    <label>URL del logo (gif/imagen alojada)</label>
+    <input id="logoUrl" placeholder="https://tuempresa.com/logo.gif" value="">
+
+    <label>URL de la web</label>
+    <input id="webUrl" value="https://www.wom-latam.com">
+
+    <label>Texto a mostrar de la web</label>
+    <input id="webText" value="www.wom-latam.com">
+
+    <div id="socialFields" class="social-fields">
+      <label>Link Instagram (opcional)</label>
+      <input id="instaUrl" placeholder="https://instagram.com/wom" value="">
+
+      <label>Link Twitter / X (opcional)</label>
+      <input id="twitterUrl" placeholder="https://twitter.com/wom" value="">
+
+      <label>Link Facebook (opcional)</label>
+      <input id="fbUrl" placeholder="https://facebook.com/wom" value="">
+    </div>
+
+    <hr class="divider">
+
+    <h2>Datos de la persona</h2>
+    <label>Nombre y apellido</label>
+    <input id="nombre" placeholder="Nahue Leguizamón" value="Nahue Leguizamón">
+
+    <label>Puesto</label>
+    <input id="puesto" placeholder="Diseñador gráfico" value="Diseñador gráfico">
+
+    <label>Teléfono</label>
+    <input id="telefono" placeholder="+54 11 1111-1111" value="+54 11 1111-1111">
+
+    <label>Email</label>
+    <input id="email" placeholder="area@wom.ar" value="area@wom.ar">
+  </div>
+
+  <div class="panel">
+    <h2>Vista previa</h2>
+    <div class="preview-box" id="previewBox">
+      <div id="signaturePreview"></div>
+    </div>
+    <button id="copyBtn">Copiar firma</button>
+    <div class="hint">
+      Copiá y pegá directamente en el editor de firma de Gmail u Outlook (Ctrl+V / Cmd+V).
+      Si necesitás el logo, asegurate de que la <b>URL del logo</b> sea pública y accesible
+      desde cualquier lugar (no un archivo local) — así se ve tanto en Gmail como en Outlook.
+    </div>
+  </div>
+
+</div>
+
+<script>
+let currentTemplate = 'clasica';
+
+function buildSignatureClasica(){
+  const logoUrl = document.getElementById('logoUrl').value.trim();
+  const webUrl = document.getElementById('webUrl').value.trim();
+  const webText = document.getElementById('webText').value.trim();
+  const nombre = document.getElementById('nombre').value.trim();
+  const puesto = document.getElementById('puesto').value.trim();
+  const telefono = document.getElementById('telefono').value.trim();
+  const email = document.getElementById('email').value.trim();
+
+  const logoCell = logoUrl
+    ? `<img src="${logoUrl}" alt="logo" width="120" style="display:block;border:0;">`
+    : `<div style="width:120px;height:80px;background:#eee;color:#999;font-size:11px;
+        display:flex;align-items:center;justify-content:center;text-align:center;">
+        (pegá la URL del logo)</div>`;
+
+  return `
+  <table cellpadding="0" cellspacing="0" border="0" style="font-family: Arial, Helvetica, sans-serif;">
+    <tr>
+      <td style="padding-right:20px; vertical-align:top;">
+        ${logoCell}
+      </td>
+      <td style="vertical-align:top; border-left:0;">
+        <table cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td style="font-size:20px; font-weight:bold; color:#2E5C99; padding-bottom:2px;">
+              ${nombre || 'Nombre Apellido'}
+            </td>
+          </tr>
+          <tr>
+            <td style="font-size:15px; color:#222222; padding-bottom:4px;">
+              <span style="color:#5B9BD5; font-weight:bold;">|</span>&nbsp;${puesto || 'Puesto'}
+            </td>
+          </tr>
+          <tr>
+            <td style="font-size:13px; color:#222222; padding-bottom:2px;">
+              ${telefono || ''}${telefono && email ? ' | ' : ''}${email ? `<a href="mailto:${email}" style="color:#2E5C99; text-decoration:underline;">${email}</a>` : ''}
+            </td>
+          </tr>
+          <tr>
+            <td style="font-size:14px;">
+              <a href="${webUrl}" style="color:#2E5C99; font-weight:bold; text-decoration:underline;">${webText}</a>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>`;
+}
+
+function buildSignatureTarjeta(){
+  const logoUrl = document.getElementById('logoUrl').value.trim();
+  const webUrl = document.getElementById('webUrl').value.trim();
+  const webText = document.getElementById('webText').value.trim();
+  const nombre = document.getElementById('nombre').value.trim() || 'Nombre Apellido';
+  const puesto = document.getElementById('puesto').value.trim();
+  const telefono = document.getElementById('telefono').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const instaUrl = document.getElementById('instaUrl').value.trim();
+  const twitterUrl = document.getElementById('twitterUrl').value.trim();
+  const fbUrl = document.getElementById('fbUrl').value.trim();
+
+  const ACCENT = '#65b8e7';
+  const BG = '#192d4d';
+
+  const partes = nombre.split(' ');
+  let linea1, linea2;
+  if (partes.length > 1){
+    linea1 = partes.slice(0, Math.ceil(partes.length/2)).join(' ');
+    linea2 = partes.slice(Math.ceil(partes.length/2)).join(' ');
+  } else {
+    linea1 = nombre;
+    linea2 = '';
+  }
+
+  const logoCell = logoUrl
+    ? `<img src="${logoUrl}" alt="logo" width="60" style="display:block;border:0;margin-bottom:10px;">`
+    : '';
+
+  const socialRows = [
+    instaUrl ? `<tr><td style="padding-bottom:6px;"><a href="${instaUrl}" style="color:${ACCENT}; text-decoration:none; font-family:Arial, Helvetica, sans-serif; font-size:12px; font-weight:bold;">IG</a></td></tr>` : '',
+    twitterUrl ? `<tr><td style="padding-bottom:6px;"><a href="${twitterUrl}" style="color:${ACCENT}; text-decoration:none; font-family:Arial, Helvetica, sans-serif; font-size:12px; font-weight:bold;">X</a></td></tr>` : '',
+    fbUrl ? `<tr><td style="padding-bottom:6px;"><a href="${fbUrl}" style="color:${ACCENT}; text-decoration:none; font-family:Arial, Helvetica, sans-serif; font-size:12px; font-weight:bold;">FB</a></td></tr>` : ''
+  ].join('');
+
+  const socialColumn = socialRows
+    ? `<td style="padding:0 20px; border-left:1px solid ${ACCENT};"></td>
+       <td style="vertical-align:middle;">
+         <table cellpadding="0" cellspacing="0" border="0">${socialRows}</table>
+       </td>`
+    : '';
+
+  return `
+  <table cellpadding="0" cellspacing="0" border="0" style="background-color:${BG}; border-radius:14px;">
+    <tr>
+      <td style="padding:26px 30px;">
+        <table cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td style="vertical-align:top; padding-right:22px;">
+              ${logoCell}
+              <div style="font-family:Arial, Helvetica, sans-serif; font-size:19px; font-weight:bold; color:#ffffff; line-height:1.25; text-transform:uppercase;">
+                ${linea1}${linea2 ? '<br>' + linea2 : ''}
+              </div>
+              <div style="font-family:Arial, Helvetica, sans-serif; font-size:11.5px; color:${ACCENT}; margin-top:6px; text-transform:uppercase; letter-spacing:.05em;">
+                ${puesto || 'Puesto'}
+              </div>
+            </td>
+            <td style="padding:0 20px; border-left:1px solid ${ACCENT};"></td>
+            <td style="vertical-align:middle; padding-right:${socialRows ? '20px' : '0'};">
+              <table cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="color:${ACCENT}; font-size:13px; padding-bottom:8px; padding-right:8px; font-family:Arial, Helvetica, sans-serif;">&#9993;</td>
+                  <td style="padding-bottom:8px; font-family:Arial, Helvetica, sans-serif; font-size:13px;">
+                    <a href="mailto:${email}" style="color:#ffffff; text-decoration:none;">${email || 'email@wom.ar'}</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="color:${ACCENT}; font-size:13px; padding-bottom:8px; padding-right:8px; font-family:Arial, Helvetica, sans-serif;">&#9742;</td>
+                  <td style="padding-bottom:8px; font-family:Arial, Helvetica, sans-serif; font-size:13px; color:#ffffff;">
+                    ${telefono || '+54 11 0000-0000'}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="color:${ACCENT}; font-size:13px; padding-right:8px; font-family:Arial, Helvetica, sans-serif;">&#9679;</td>
+                  <td style="font-family:Arial, Helvetica, sans-serif; font-size:13px;">
+                    <a href="${webUrl}" style="color:#ffffff; text-decoration:none;">${webText}</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+            ${socialColumn}
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>`;
+}
+
+function buildSignatureHTML(){
+  return currentTemplate === 'tarjeta' ? buildSignatureTarjeta() : buildSignatureClasica();
+}
+
+function render(){
+  const html = buildSignatureHTML();
+  document.getElementById('signaturePreview').innerHTML = html;
+  const previewBox = document.getElementById('previewBox');
+  previewBox.style.background = currentTemplate === 'tarjeta' ? '#0e1c30' : '#fff';
+}
+
+document.querySelectorAll('input').forEach(el => el.addEventListener('input', render));
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentTemplate = btn.dataset.template;
+    document.getElementById('socialFields').classList.toggle('show', currentTemplate === 'tarjeta');
+    render();
+  });
+});
+
+document.getElementById('copyBtn').addEventListener('click', async () => {
+  const html = buildSignatureHTML();
+  const btn = document.getElementById('copyBtn');
+  try {
+    const blobHtml = new Blob([html], {type: 'text/html'});
+    const blobText = new Blob([document.getElementById('signaturePreview').innerText], {type: 'text/plain'});
+    const item = new ClipboardItem({'text/html': blobHtml, 'text/plain': blobText});
+    await navigator.clipboard.write([item]);
+  } catch(e) {
+    const range = document.createRange();
+    range.selectNode(document.getElementById('signaturePreview'));
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    document.execCommand('copy');
+    sel.removeAllRanges();
+  }
+  btn.textContent = '¡Copiado!';
+  btn.classList.add('copied');
+  setTimeout(() => {
+    btn.textContent = 'Copiar firma';
+    btn.classList.remove('copied');
+  }, 1800);
+});
+
+render();
+</script>
+
+</body>
+</html>
